@@ -1,0 +1,192 @@
+version: "3.9"
+
+services:
+  # --- DATABASE ---
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: meduser
+      POSTGRES_PASSWORD: medpass
+      POSTGRES_DB: medinsight
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - pds-net
+
+  # --- KEYCLOAK ---
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/medinsight
+      KC_DB_USERNAME: meduser
+      KC_DB_PASSWORD: medpass
+    depends_on:
+      - postgres
+    ports:
+      - "8090:8090"
+    networks:
+      - pds-net
+
+  # --- MONITORING ---
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - pds-net
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - pds-net
+
+  # --- BACKEND MICROSERVICES ---
+  discovery:
+    build:
+      context: ./backend/discovery-service
+      dockerfile: Dockerfile
+    container_name: discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - pds-net
+
+  gateway:
+    build:
+      context: ./backend/gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  auth:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: auth
+    ports:
+      - "8085:8085"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  analytic:
+    build:
+      context: ./backend/analytics-service
+      dockerfile: Dockerfile
+    container_name: analytic
+    ports:
+      - "8083:8083"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  medecin:
+    build:
+      context: ./backend/medecin-service
+      dockerfile: Dockerfile
+    container_name: medecin
+    ports:
+      - "8082:8082"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  notification:
+    build:
+      context: ./backend/notification-service
+      dockerfile: Dockerfile
+    container_name: notification
+    ports:
+      - "8087:8087"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  consultation:
+    build:
+      context: ./backend/consultation-service
+      dockerfile: Dockerfile
+    container_name: consultation
+    ports:
+      - "8088:8088"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  patient:
+    build:
+      context: ./backend/patient-service
+      dockerfile: Dockerfile
+    container_name: patient
+    ports:
+      - "8081:8081"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  rendezvous:
+    build:
+      context: ./backend/rendezvous-service
+      dockerfile: Dockerfile
+    container_name: rendezvous
+    ports:
+      - "8086:8086"
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+
+  # --- FRONTEND ---
+  frontend:
+    build:
+      context: ./front/e_health
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - gateway
+    networks:
+      - pds-net
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+networks:
+  pds-net:
+    driver: bridge
+
