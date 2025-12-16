@@ -34,7 +34,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8090:8090"
+      - "8090:8080"
     mem_limit: 600m
     networks:
       - pds-net

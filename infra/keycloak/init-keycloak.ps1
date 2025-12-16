@@ -2,7 +2,7 @@
 Write-Host "Waiting for Keycloak to start..."
 do {
     Start-Sleep -Seconds 5
-    $status = try { Invoke-WebRequest -Uri "http://localhost:8090/health" -Method Get -ErrorAction Stop } catch { $null }
+    $status = try { Invoke-WebRequest -Uri "http://localhost:8090/realms/master/.well-known/openid-configuration" -Method Get -ErrorAction Stop } catch { $null }
 } until ($status.StatusCode -eq 200)
 
 # Variables
