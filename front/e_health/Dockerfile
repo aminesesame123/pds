@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --no-audit --no-fund --prefer-offline
 
 # Copier tout le code source
 
@@ -24,7 +24,7 @@ FROM nginx:alpine
 
 # Copier les fichiers build dans le dossier par défaut de Nginx
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist/browser /usr/share/nginx/html
 
 # Copier la configuration Nginx personnalisée si nécessaire
 

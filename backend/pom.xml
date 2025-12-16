@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <spring-boot.version>3.2.0</spring-boot.version>
         <spring-cloud.version>2023.0.5</spring-cloud.version>
@@ -102,5 +102,7 @@
         <module>rendezvous-service</module>
         <module>analytics-service</module>
         <module>notification-service</module>
+        <module>supervision-service</module>
+        <module>audit-service</module>
     </modules>
 </project>

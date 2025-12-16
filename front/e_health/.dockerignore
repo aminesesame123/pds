@@ -1,0 +1,8 @@
+node_modules
+.git
+.vscode
+dist
+.angular
+.idea
+Dockerfile
+README.md

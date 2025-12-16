@@ -1,6 +1,7 @@
-version: "3.9"
+
 
 services:
+  # --- DATABASE ---
   # --- DATABASE ---
   postgres:
     image: postgres:15
@@ -13,6 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    mem_limit: 256m
     networks:
       - pds-net
 
@@ -28,58 +30,86 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/medinsight
       KC_DB_USERNAME: meduser
       KC_DB_PASSWORD: medpass
+      JAVA_OPTS: "-Xms256m -Xmx400m"
     depends_on:
       - postgres
     ports:
       - "8090:8090"
+    mem_limit: 600m
     networks:
       - pds-net
 
-  # --- MONITORING ---
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
-    networks:
-      - pds-net
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
-    ports:
-      - "3000:3000"
-    depends_on:
-      - prometheus
-    networks:
-      - pds-net
+  # --- MONITORING (DISABLED FOR MEMORY) ---
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - pds-net
+  #
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: grafana
+  #   environment:
+  #     GF_SECURITY_ADMIN_USER: admin
+  #     GF_SECURITY_ADMIN_PASSWORD: admin
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - pds-net
 
   # --- BACKEND MICROSERVICES ---
   discovery:
     build:
-      context: ./backend/discovery-service
+      context: ./backend/Discovery-Service
       dockerfile: Dockerfile
     container_name: discovery
     ports:
       - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 256m
     networks:
       - pds-net
 
   gateway:
     build:
-      context: ./backend/gateway-service
+      context: ./backend/Gateway-Service
       dockerfile: Dockerfile
     container_name: gateway
     ports:
       - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
+    depends_on:
+      - discovery
+    networks:
+      - pds-net
+  
+  supervision:
+    build:
+      context: ./backend/Supervision-Service
+      dockerfile: Dockerfile
+    container_name: supervision
+    ports:
+      - "9091:9090"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
     networks:
@@ -87,47 +117,75 @@ services:
 
   auth:
     build:
-      context: ./backend/auth-service
+      context: ./backend/Auth-Service
       dockerfile: Dockerfile
     container_name: auth
     ports:
       - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
   analytic:
     build:
-      context: ./backend/analytics-service
+      context: ./backend/Analytics-Service
       dockerfile: Dockerfile
     container_name: analytic
     ports:
       - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
   medecin:
     build:
-      context: ./backend/medecin-service
+      context: ./backend/Medecin-Service
       dockerfile: Dockerfile
     container_name: medecin
     ports:
       - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
   notification:
     build:
-      context: ./backend/notification-service
+      context: ./backend/Notification-Service
       dockerfile: Dockerfile
     container_name: notification
     ports:
       - "8087:8087"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
     networks:
@@ -135,37 +193,81 @@ services:
 
   consultation:
     build:
-      context: ./backend/consultation-service
+      context: ./backend/Consultation-Service
       dockerfile: Dockerfile
     container_name: consultation
     ports:
       - "8088:8088"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
   patient:
     build:
-      context: ./backend/patient-service
+      context: ./backend/Patient-Service
       dockerfile: Dockerfile
     container_name: patient
     ports:
       - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
   rendezvous:
     build:
-      context: ./backend/rendezvous-service
+      context: ./backend/RendezVous-Service
       dockerfile: Dockerfile
     container_name: rendezvous
     ports:
       - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
+    networks:
+      - pds-net
+
+  audit:
+    build:
+      context: ./backend/Audit-Service
+      dockerfile: Dockerfile
+    container_name: audit
+    ports:
+      - "8089:8089"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+    mem_limit: 300m
+    depends_on:
+      - discovery
+      - postgres
     networks:
       - pds-net
 
