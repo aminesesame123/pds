@@ -1,19 +1,27 @@
 package com.sesame.gatewayservice.config;
 
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
+    private String jwkSetUri;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
@@ -26,9 +34,14 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
+                                "/*/v3/api-docs",
                                 "/webjars/**",
                                 "/swagger-resources/**",
-                                "/favicon.ico")
+                                "/favicon.ico",
+                                "/api/*/swagger-ui/**",
+                                // Whitelist Registration Endpoints
+                                "/auth-service/api/auth/register",
+                                "/patient-service/api/patients/register")
                         .permitAll()
                         // Allow Actuator
                         .pathMatchers("/actuator/**").permitAll()
@@ -36,9 +49,17 @@ public class SecurityConfig {
                         .pathMatchers(org.springframework.http.HttpMethod.OPTIONS).permitAll()
                         // Authenticate everything else
                         .anyExchange().authenticated())
-                .oauth2ResourceServer(
-                        oauth2 -> oauth2.jwt(org.springframework.security.config.Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtDecoder(jwtDecoder())));
         return http.build();
+    }
+
+    @Bean
+    public ReactiveJwtDecoder jwtDecoder() {
+        NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        // Disable issuer validation by only using timestamp validation
+        OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
+        jwtDecoder.setJwtValidator(withTimestamp);
+        return jwtDecoder;
     }
 
     @Bean

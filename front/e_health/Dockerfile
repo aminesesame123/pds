@@ -1,39 +1,33 @@
-# Étape 1 : build Angular
+# Stage 1: Build the Angular application
+FROM node:20-alpine AS builder
 
-FROM node:20-alpine AS build
-
+# Set working directory
 WORKDIR /app
 
-# Copier package.json et package-lock.json pour installer les dépendances
-
+# Copy package files
 COPY package*.json ./
 
-RUN npm ci --no-audit --no-fund --prefer-offline
+# Install dependencies
+RUN npm ci --legacy-peer-deps
 
-# Copier tout le code source
-
+# Copy all source files
 COPY . .
 
-# Construire l'application pour la production
+# Build the Angular app (using default/development for faster builds)
+# For production deployment, use: RUN npm run build -- --configuration production
+RUN npm run build
 
-RUN npm run build -- --output-path=dist
-
-# Étape 2 : serveur Nginx
-
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copier les fichiers build dans le dossier par défaut de Nginx
+# Copy built files from builder stage
+COPY --from=builder /app/dist/e_health/browser /usr/share/nginx/html
 
-COPY --from=build /app/dist/browser /usr/share/nginx/html
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copier la configuration Nginx personnalisée si nécessaire
-
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Exposer le port 80
-
+# Expose port 80
 EXPOSE 80
 
-# Lancer Nginx en mode foreground
-
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

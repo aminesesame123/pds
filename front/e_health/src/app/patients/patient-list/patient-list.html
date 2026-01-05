@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="card-header">
+        <h5>Liste des Patients</h5>
+        <div class="card-header-right">
+            <!-- Add actions here if needed -->
+        </div>
+    </div>
+    <div class="card-block table-border-style">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let patient of patients">
+                        <th scope="row">{{ patient.id }}</th>
+                        <td>{{ patient.nom }}</td>
+                        <td>{{ patient.prenom }}</td>
+                        <td>{{ patient.email }}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" (click)="viewPatient(patient.id)">Voir</button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="patients.length === 0 && !loading">
+                        <td colspan="5" class="text-center">Aucun patient trouvé.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="loading" class="text-center">
+            <p>Chargement...</p>
+        </div>
+    </div>
+</div>

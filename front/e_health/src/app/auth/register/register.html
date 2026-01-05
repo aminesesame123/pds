@@ -1,0 +1,96 @@
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Créer un compte</h2>
+            <p>Rejoignez MedInsight et commencez votre suivi santé</p>
+        </div>
+
+        <div *ngIf="error" class="error-message">
+            {{ error }}
+        </div>
+
+        <div *ngIf="success" class="success-message">
+            {{ success }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Sélecteur de rôle -->
+            <div class="role-selector">
+                <button type="button" [class.active]="registerForm.get('role')?.value === 'PATIENT'"
+                    (click)="setRole('PATIENT')">Patient</button>
+                <button type="button" [class.active]="registerForm.get('role')?.value === 'MEDECIN'"
+                    (click)="setRole('MEDECIN')">Médecin</button>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" formControlName="nom" placeholder="Durand">
+                    <small class="error" *ngIf="isFieldInvalid('nom')">Le nom est requis</small>
+                </div>
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" formControlName="prenom" placeholder="Jean">
+                    <small class="error" *ngIf="isFieldInvalid('prenom')">Le prénom est requis</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email" placeholder="jean.durand@exemple.com">
+                <small class="error" *ngIf="isFieldInvalid('email')">Email invalide</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" formControlName="password" placeholder="••••••••">
+                <small class="error" *ngIf="isFieldInvalid('password')">6 caractères minimum</small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telephone">Téléphone</label>
+                    <input type="text" id="telephone" formControlName="telephone" placeholder="06 12 34 56 78">
+                    <small class="error" *ngIf="isFieldInvalid('telephone')">Le téléphone est requis</small>
+                </div>
+                <div class="form-group">
+                    <label for="dateNaissance">Date de Naissance</label>
+                    <input type="date" id="dateNaissance" formControlName="dateNaissance">
+                    <small class="error" *ngIf="isFieldInvalid('dateNaissance')">La date est requise</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="adresse">Adresse</label>
+                <input type="text" id="adresse" formControlName="adresse" placeholder="123 Rue de la Santé, Paris">
+                <small class="error" *ngIf="isFieldInvalid('adresse')">L'adresse est requise</small>
+            </div>
+
+            <!-- Champs spécifiques Médecin -->
+            <div *ngIf="registerForm.get('role')?.value === 'MEDECIN'" class="doctor-fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="specialite">Spécialité</label>
+                        <input type="text" id="specialite" formControlName="specialite" placeholder="Cardiologue">
+                        <small class="error" *ngIf="isFieldInvalid('specialite')">La spécialité est requise</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="grade">Grade</label>
+                        <input type="text" id="grade" formControlName="grade" placeholder="Pr. / Dr.">
+                        <small class="error" *ngIf="isFieldInvalid('grade')">Le grade est requis</small>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register" [disabled]="loading || registerForm.invalid">
+                <span *ngIf="!loading">S'inscrire</span>
+                <span *ngIf="loading">Inscription en cours...</span>
+            </button>
+
+            <div class="auth-footer">
+                Déjà un compte ?
+                <a routerLink="/login">Connectez-vous ici</a>
+            </div>
+        </form>
+    </div>
+</div>

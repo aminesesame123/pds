@@ -1,0 +1,79 @@
+.security-container {
+    padding: 40px;
+    background: #0f172a;
+    min-height: 100vh;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+}
+
+.security-header {
+    margin-bottom: 32px;
+}
+
+.security-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 8px;
+}
+
+.security-header p {
+    color: #94a3b8;
+}
+
+.table-card {
+    background: #1e293b;
+    border-radius: 20px;
+    border: 1px solid #334155;
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 24px;
+    border-bottom: 1px solid #334155;
+}
+
+.table-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: #0f172a;
+}
+
+td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #334155;
+    color: #cbd5e1;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #334155;
+}
+
+.status-indicator.success {
+    color: #10b981;
+}
+
+.loading-state {
+    padding: 100px;
+    text-align: center;
+    color: #64748b;
+}

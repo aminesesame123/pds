@@ -35,6 +35,8 @@ try {
     Invoke-RestMethod -Uri "$KC_URL/admin/realms" -Method Post -Headers $Headers -Body (@{
         realm = $REALM_NAME
         enabled = $true
+        registrationAllowed = $true
+        registrationEmailAsUsername = $false
     } | ConvertTo-Json)
 } catch {
     Write-Host "Realm might already exist, continuing..."
@@ -46,10 +48,30 @@ try {
         clientId = "frontend-client"
         enabled = $true
         publicClient = $true
-        redirectUris = @("http://localhost:5173/*", "http://localhost:8080/*")
+        directAccessGrantsEnabled = $true
+        redirectUris = @("http://localhost:4200/*", "http://localhost:8080/*")
         webOrigins = @("*")
     } | ConvertTo-Json -Depth 10)
-} catch {}
+} catch {
+    Write-Host "Client frontend might already exist. Attempting to update..."
+    try {
+        $clients = Invoke-RestMethod -Uri "$KC_URL/admin/realms/$REALM_NAME/clients?clientId=frontend-client" -Method Get -Headers $Headers
+        $id = $clients[0].id
+        if ($id) {
+            Invoke-RestMethod -Uri "$KC_URL/admin/realms/$REALM_NAME/clients/$id" -Method Put -Headers $Headers -Body (@{
+                clientId = "frontend-client"
+                enabled = $true
+                publicClient = $true
+                directAccessGrantsEnabled = $true
+                redirectUris = @("http://localhost:4200/*", "http://localhost:8080/*")
+                webOrigins = @("http://localhost:4200", "+")
+            } | ConvertTo-Json -Depth 10)
+            Write-Host "Client frontend updated successfully."
+        }
+    } catch {
+        Write-Host "Failed to update client: $_"
+    }
+}
 
 Write-Host "Creating Client backend-service..."
 try {

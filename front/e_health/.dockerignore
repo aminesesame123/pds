@@ -1,8 +1,13 @@
 node_modules
-.git
-.vscode
 dist
 .angular
+.git
+.gitignore
+*.md
+.vscode
 .idea
-Dockerfile
-README.md
+npm-debug.log
+yarn-error.log
+coverage
+.env
+.env.local

@@ -58,7 +58,7 @@ curl -s -X POST "$KC_URL/admin/realms/$REALM_NAME/clients" \
     }'
 
 echo "Creating Roles..."
-ROLES=("ADMIN" "MEDECIN" "PATIENT" "SECRETAIRE")
+ROLES=("ADMIN" "MEDECIN" "PATIENT" "SECRETAIRE" "RESPONSABLE_SECURITE")
 for ROLE in "${ROLES[@]}"; do
     curl -s -X POST "$KC_URL/admin/realms/$REALM_NAME/roles" \
         -H "Authorization: Bearer $TKN" \

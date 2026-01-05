@@ -1,0 +1,21 @@
+/* Admin Layout Styles */
+.pcoded-header[pcoded-header-position="fixed"] {
+    position: fixed;
+    z-index: 1024;
+    width: 100%;
+}
+.pcoded-navbar[pcoded-navbar-position="fixed"] {
+    position: fixed;
+    z-index: 1023;
+    height: 100%;
+    overflow-y: auto;
+}
+.pcoded-main-container {
+    margin-left: 230px;
+    transition: margin-left 0.3s ease-in-out;
+}
+@media (max-width: 991px) {
+    .pcoded-main-container {
+        margin-left: 0;
+    }
+}

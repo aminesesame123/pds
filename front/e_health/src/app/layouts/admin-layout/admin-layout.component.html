@@ -1,0 +1,101 @@
+<div id="pcoded" (window:resize)="onResize($event)" class="pcoded" theme-layout="vertical" vertical-placement="left"
+    vertical-layout="wide" [attr.pcoded-device-type]="pcodedDeviceType" [attr.vertical-nav-type]="verticalNavType"
+    [attr.vertical-effect]="verticalEffect" vnavigation-view="view1">
+    <div class="pcoded-overlay-box"></div>
+    <div class="pcoded-container navbar-wrapper">
+        <nav class="navbar header-navbar pcoded-header" header-theme="theme4" pcoded-header-position="fixed">
+            <div class="navbar-wrapper">
+                <div class="navbar-logo" navbar-theme="theme4">
+                    <a class="mobile-menu" id="mobile-collapse" href="javascript:;" (click)="toggleOpened()">
+                        <i class="ti-menu"></i>
+                    </a>
+                    <a [routerLink]="['/']">
+                        <img class="img-fluid" src="assets/images/auth/logo.png" alt="Theme-Logo"
+                            style="max-height: 50px;" />
+                    </a>
+                    <a (click)="onMobileMenu()" class="mobile-options">
+                        <i class="ti-more"></i>
+                    </a>
+                </div>
+
+                <div class="navbar-container">
+                    <ul class="nav-right">
+                        <li class="user-profile header-notification">
+                            <a href="javascript:;">
+                                <img src="assets/images/user.png" alt="User-Profile-Image">
+                                <span>{{ userProfile?.preferred_username || 'User' }}</span>
+                                <i class="ti-angle-down"></i>
+                            </a>
+                            <ul class="show-notification profile-notification">
+                                <li>
+                                    <a href="javascript:;" (click)="logout()">
+                                        <i class="ti-layout-sidebar-left"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="pcoded-main-container" style="margin-top: 56px;">
+            <div class="pcoded-wrapper">
+                <nav id="main_navbar" class=" pcoded-navbar" navbar-theme="themelight1" active-item-theme="theme4"
+                    sub-item-theme="theme2" active-item-style="style0" pcoded-navbar-position="fixed"
+                    pcoded-header-position="fixed">
+                    <div class="pcoded-inner-navbar main-menu">
+                        <div class="pcoded-navigatio-lavel" menu-title-theme="theme5">Navigation</div>
+                        <ul class="pcoded-item pcoded-left-item" item-border="none" item-border-style="solid"
+                            subitem-border="solid">
+
+                            <!-- Dashboard -->
+                            <li routerLinkActive="active">
+                                <a [routerLink]="['/dashboard']">
+                                    <span class="pcoded-micon"><i class="ti-home"></i></span>
+                                    <span class="pcoded-mtext">Dashboard</span>
+                                </a>
+                            </li>
+
+                            <!-- Patients -->
+                            <li routerLinkActive="active">
+                                <a [routerLink]="['/patients']">
+                                    <span class="pcoded-micon"><i class="ti-user"></i></span>
+                                    <span class="pcoded-mtext">Patients</span>
+                                </a>
+                            </li>
+
+                            <!-- Médecins -->
+                            <li routerLinkActive="active">
+                                <a [routerLink]="['/medecins']">
+                                    <span class="pcoded-micon"><i class="ti-id-badge"></i></span>
+                                    <span class="pcoded-mtext">Médecins</span>
+                                </a>
+                            </li>
+
+                            <!-- Validation Comptes (Admin Only) -->
+                            <li routerLinkActive="active" *ngIf="isAdmin">
+                                <a [routerLink]="['/admin/validation']">
+                                    <span class="pcoded-micon"><i class="ti-check-box"></i></span>
+                                    <span class="pcoded-mtext">Validation Comptes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="pcoded-content">
+                    <div class="pcoded-inner-content">
+                        <div class="main-body">
+                            <div class="page-wrapper">
+                                <div class="page-body">
+                                    <router-outlet></router-outlet>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

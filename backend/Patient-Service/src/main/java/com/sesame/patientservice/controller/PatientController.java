@@ -17,6 +17,7 @@ public class PatientController {
 
     private final PatientRepository patientRepository;
     private final DossierMedicalRepository dossierMedicalRepository;
+    private final com.sesame.patientservice.service.KeycloakService keycloakService;
 
     @GetMapping
     public List<Patient> getAllPatients() {
@@ -38,6 +39,39 @@ public class PatientController {
         dm.setPatient(patient);
         patient.setDossierMedical(dm);
         return patientRepository.save(patient);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody com.sesame.patientservice.dto.RegisterRequest request) {
+        try {
+            // 1. Create User in Keycloak
+            keycloakService.createUser(
+                    request.getUsername() != null ? request.getUsername() : request.getEmail(),
+                    request.getEmail(),
+                    request.getPassword(),
+                    request.getPrenom(),
+                    request.getNom(),
+                    false); // Disabled by default, needs admin approval.
+
+            // 2. Create Patient in DB
+            Patient patient = new Patient();
+            patient.setNom(request.getNom());
+            patient.setPrenom(request.getPrenom());
+            patient.setEmail(request.getEmail());
+            patient.setAdresse(request.getAdresse());
+            patient.setTelephone(request.getTelephone());
+            patient.setDateNaissance(request.getDateNaissance());
+
+            DossierMedical dm = new DossierMedical();
+            dm.setStatut("ACTIF");
+            dm.setPatient(patient);
+            patient.setDossierMedical(dm);
+
+            Patient savedPatient = patientRepository.save(patient);
+            return ResponseEntity.ok(savedPatient);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Registration failed: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

@@ -1,0 +1,50 @@
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Validations en attente</h1>
+        <p>Gérez les nouvelles inscriptions au sein de MedInsight</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ pendingUsers.length }}</div>
+            <div class="stat-label">Inscriptions à valider</div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div *ngIf="loading" class="loading-state">
+            Chargement des données...
+        </div>
+
+        <div *ngIf="!loading && pendingUsers.length === 0" class="empty-state">
+            Aucune inscription en attente de validation.
+        </div>
+
+        <table *ngIf="!loading && pendingUsers.length > 0">
+            <thead>
+                <tr>
+                    <th>Nom / Prénom</th>
+                    <th>Identifiant</th>
+                    <th>Email</th>
+                    <th>Date de création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of pendingUsers">
+                    <td>
+                        <div class="user-name">{{ user.lastName }} {{ user.firstName }}</div>
+                    </td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.createdTimestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+                        <button class="btn-approve" (click)="approveUser(user.id)" [disabled]="actionLoading">
+                            Approuver
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

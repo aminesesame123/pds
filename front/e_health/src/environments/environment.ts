@@ -4,5 +4,6 @@ export const environment = {
         url: 'http://localhost:8090',
         realm: 'MedInsightRealm',
         clientId: 'frontend-client'
-    }
+    },
+    apiUrl: 'http://localhost:8084'
 };

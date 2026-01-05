@@ -1,0 +1,116 @@
+.admin-container {
+    padding: 40px;
+    background: #f8fafc;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-header {
+    margin-bottom: 32px;
+}
+
+.admin-header h1 {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.admin-header p {
+    color: #64748b;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #0ea5e9;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.table-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8fafc;
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+td {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 15px;
+}
+
+tr:hover {
+    background: #fdfdfd;
+}
+
+.user-name {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.btn-approve {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-approve:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.loading-state,
+.empty-state {
+    padding: 60px;
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 500;
+}

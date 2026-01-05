@@ -1,0 +1,38 @@
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>MedInsight</h2>
+            <p>Bienvenue sur votre plateforme de santé</p>
+        </div>
+
+        <div *ngIf="error" class="error-message">
+            {{ error }}
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="username">Identifiant (Email)</label>
+                <input type="text" id="username" formControlName="username" placeholder="votre@email.com"
+                    autocomplete="username">
+                <small class="error" *ngIf="isFieldInvalid('username')">Email valide requis</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" formControlName="password" placeholder="••••••••"
+                    autocomplete="current-password">
+                <small class="error" *ngIf="isFieldInvalid('password')">Le mot de passe est requis</small>
+            </div>
+
+            <button type="submit" class="btn-login" [disabled]="loading || loginForm.invalid">
+                <span *ngIf="!loading">Se connecter</span>
+                <span *ngIf="loading">Connexion en cours...</span>
+            </button>
+
+            <div class="auth-footer">
+                Pas encore de compte ?
+                <a routerLink="/register">Inscrivez-vous ici</a>
+            </div>
+        </form>
+    </div>
+</div>
