@@ -117,15 +117,17 @@ public class KeycloakService {
     }
 
     private String getAdminToken() {
-        String url = authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+        // Use Master Realm Admin for full permissions
+        String url = authServerUrl + "/realms/master/protocol/openid-connect/token";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("client_id", "backend-service");
-        map.add("client_secret", "backend-secret");
-        map.add("grant_type", "client_credentials");
+        map.add("client_id", "admin-cli");
+        map.add("username", "admin");
+        map.add("password", "admin");
+        map.add("grant_type", "password");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
