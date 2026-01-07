@@ -1,0 +1,133 @@
+.dashboard-container {
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+    color: #334155;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #0f172a;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    letter-spacing: -1px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    padding: 1.75rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(79, 70, 229, 0.1);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    opacity: 0.5;
+}
+
+.icon-bg {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.purple {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    color: #4f46e5;
+}
+
+.stat-card:hover .purple {
+    color: #4338ca;
+}
+
+.blue {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    color: #0ea5e9;
+}
+
+.stat-card:hover .blue {
+    color: #0284c7;
+}
+
+.green {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #16a34a;
+}
+
+.stat-card:hover .green {
+    color: #15803d;
+}
+
+.orange {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+    color: #f97316;
+}
+
+.stat-card:hover .orange {
+    color: #ea580c;
+}
+
+.stat-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.recent-activity h2 {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.empty-state {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    padding: 5rem;
+    text-align: center;
+    border-radius: 24px;
+    color: #94a3b8;
+    border: 2px dashed #e2e8f0;
+    font-weight: 500;
+}

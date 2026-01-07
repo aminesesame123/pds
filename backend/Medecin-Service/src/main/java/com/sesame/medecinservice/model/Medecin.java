@@ -18,6 +18,7 @@ public class Medecin {
     private String prenom;
     private String email;
     private String password;
+    private String telephone;
 
     private String specialite;
     private String grade;

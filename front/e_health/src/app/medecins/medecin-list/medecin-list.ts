@@ -11,6 +11,7 @@ import { MedecinService } from '../../services/medecin.service';
 })
 export class MedecinList implements OnInit {
   medecins: any[] = [];
+  filteredMedecins: any[] = [];
   loading = false;
 
   constructor(private medecinService: MedecinService) { }
@@ -24,6 +25,7 @@ export class MedecinList implements OnInit {
     this.medecinService.getMedecins().subscribe({
       next: (data) => {
         this.medecins = data;
+        this.filteredMedecins = data;
         this.loading = false;
       },
       error: (err) => {
@@ -33,8 +35,16 @@ export class MedecinList implements OnInit {
     });
   }
 
+  onSearch(event: any) {
+    const term = event.target.value.toLowerCase();
+    this.filteredMedecins = this.medecins.filter(m =>
+      m.nom?.toLowerCase().includes(term) ||
+      m.prenom?.toLowerCase().includes(term) ||
+      m.specialite?.toLowerCase().includes(term)
+    );
+  }
+
   viewMedecin(id: number) {
     console.log('Viewing medecin:', id);
-    // TODO: Navigate to details page
   }
 }

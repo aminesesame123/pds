@@ -16,11 +16,10 @@ export class CustomAuthService {
 
     login(username: string, password: string): Observable<any> {
         const body = new HttpParams()
-            .set('client_id', 'frontend-client') // Ensure this client allows Direct Access Grants
+            .set('client_id', 'frontend-client')
             .set('grant_type', 'password')
             .set('username', username)
             .set('password', password);
-        // For public clients, client_secret is not needed.
 
         return this.http.post(`${environment.keycloak.url}/realms/${environment.keycloak.realm}/protocol/openid-connect/token`, body, {
             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
@@ -32,6 +31,23 @@ export class CustomAuthService {
                 console.error('AuthService: Login Error', error);
             })
         );
+    }
+
+    register(user: any): Observable<any> {
+        // Route to the specific service that handles both Keycloak AND Database creation
+        let servicePrefix = '/auth-service';
+        if (user.role === 'PATIENT') {
+            servicePrefix = '/patient-service/api/patients';
+        } else if (user.role === 'MEDECIN') {
+            servicePrefix = '/medecin-service/api/medecins';
+        } else {
+            // Fallback for generic roles (handled by Auth Service, likely no DB profile)
+            servicePrefix = '/auth-service/api/auth';
+        }
+
+        const url = `${environment.apiUrl}${servicePrefix}/register`;
+        console.log('Registering via:', url);
+        return this.http.post<any>(url, user);
     }
 
     private setSession(authResult: any) {

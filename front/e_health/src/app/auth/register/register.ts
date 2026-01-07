@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { PatientService } from '../../services/patient.service';
-import { MedecinService } from '../../services/medecin.service';
+import { CustomAuthService } from '../custom-auth.service';
 
 @Component({
   selector: 'app-register',
@@ -20,8 +19,7 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private patientService: PatientService,
-    private medecinService: MedecinService,
+    private authService: CustomAuthService,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
@@ -79,20 +77,26 @@ export class RegisterComponent implements OnInit {
     this.success = '';
 
     const formData = this.registerForm.value;
-    const role = formData.role;
 
-    const request = role === 'PATIENT'
-      ? this.patientService.registerToAuth(formData)
-      : this.medecinService.createMedecin(formData);
+    // We send the whole form data, expecting the backend Auth Service 
+    // to map what it needs (username/email/password/role) 
+    // and ideally propagate other profile info if configured.
+    // NOTE: Auth Service might ignore telephone/adresse/dateNaissance unless updated.
 
-    request.subscribe({
+    this.authService.register(formData).subscribe({
       next: (res) => {
-        this.success = 'Inscription réussie ! Votre compte est en attente de validation par un administrateur.';
+        this.success = 'Inscription réussie ! Votre compte a été créé. Vous pouvez maintenant vous connecter.';
         this.loading = false;
-        setTimeout(() => this.router.navigate(['/login']), 5000);
+        // Redirect to login after a short delay to let user read success message
+        setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
-        this.error = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
+        console.error('Registration error:', err);
+        if (err.status === 409) {
+          this.error = 'Un compte avec cet email existe déjà.';
+        } else {
+          this.error = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
+        }
         this.loading = false;
       }
     });

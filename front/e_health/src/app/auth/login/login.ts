@@ -48,11 +48,11 @@ export class LoginComponent {
         const roles = profile?.realm_access?.roles || [];
 
         if (roles.includes('ADMIN')) {
-          this.router.navigate(['/patients']);
+          this.router.navigate(['/app/patients']);
         } else if (roles.includes('RESPONSABLE_SECURITE')) {
-          this.router.navigate(['/security-dashboard']); // TODO: Create this dashboard
+          this.router.navigate(['/app/security-dashboard']);
         } else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/app/dashboard']);
         }
       },
       error: (err) => {

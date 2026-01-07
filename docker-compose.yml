@@ -186,9 +186,13 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
       - JAVA_TOOL_OPTIONS=-Xms128m -Xmx200m
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medinsight
+      - SPRING_DATASOURCE_USERNAME=meduser
+      - SPRING_DATASOURCE_PASSWORD=medpass
     mem_limit: 300m
     depends_on:
       - discovery
+      - postgres
     networks:
       - pds-net
 
@@ -275,7 +279,7 @@ services:
   # --- FRONTEND ---
   frontend:
     build:
-      context: ./front/e_health
+      context: ./front/app
       dockerfile: Dockerfile
     container_name: frontend
     ports:

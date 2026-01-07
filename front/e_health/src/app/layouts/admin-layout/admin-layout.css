@@ -1,0 +1,19 @@
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    /* Width of sidebar */
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    padding: 2rem;
+    flex: 1;
+    overflow-y: auto;
+}

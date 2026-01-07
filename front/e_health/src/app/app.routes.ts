@@ -9,6 +9,8 @@ import { PatientList } from './patients/patient-list/patient-list';
 import { MedecinList } from './medecins/medecin-list/medecin-list';
 import { PendingRegistrationsComponent } from './admin/pending-registrations/pending-registrations';
 import { SecurityDashboardComponent } from './security-dashboard/security-dashboard';
+import { LandingPageComponent } from './pages/landing-page/landing-page';
+import { ProfileComponent } from './pages/profile/profile';
 
 const authGuard = () => {
     const auth = inject(CustomAuthService);
@@ -17,14 +19,16 @@ const authGuard = () => {
 };
 
 export const routes: Routes = [
+    { path: '', component: LandingPageComponent }, // Public Landing Page
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     {
-        path: '',
+        path: 'app', // Protected App Area
         component: AdminLayoutComponent,
         canActivate: [authGuard],
         children: [
             { path: 'dashboard', component: HomeComponent },
+            { path: 'profile', component: ProfileComponent },
             { path: 'patients', component: PatientList },
             { path: 'medecins', component: MedecinList },
             { path: 'admin/validations', component: PendingRegistrationsComponent },
